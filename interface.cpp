@@ -31,6 +31,17 @@ bool Interface::confirmRegister() {
     return confirmRegister();
 }
 
+bool Interface::confirmSave() {
+    printf("Save changes or not? (Y/N)\n");
+    char ch;
+    std::cin >> ch;
+    std::cin.clear();
+	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    if (ch == 'N' || ch == 'n') return false;
+    if (ch == 'Y' || ch == 'y') return true;
+    return confirmSave();
+}
+
 int Interface::chooseRole() {
     printf("Choose your role, Customer or Merchant. (C/M)\n");
     char ch;

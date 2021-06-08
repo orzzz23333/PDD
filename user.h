@@ -17,6 +17,8 @@ public:
     virtual ~User();
     virtual int getUserType() = 0;
     virtual void methodList() = 0;
+    virtual void saveData() = 0;
+    void quit();
     void changePasswd();
 };
 

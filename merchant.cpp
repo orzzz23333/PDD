@@ -12,6 +12,14 @@ int Merchant::getUserType() {
     return 1;
 }
 
+void Merchant::saveData() {
+    int index = atoi(uid) - 100000;
+    std::fstream out("data/merchant.dat", std::ios::binary|std::ios::out|std::ios::in);
+    out.seekp(index * sizeof(Merchant), std::ios::beg);
+    out.write((char *)this, sizeof(Merchant));
+    out.close();
+}
+
 void Merchant::methodList() {
     printf("C: Change password\n");
     printf("H: help\n");

@@ -8,6 +8,7 @@ class Interface {
 public:
     char *getPasswd();
     bool confirmRegister();
+    bool confirmSave();
     int chooseRole();
 };
 

@@ -42,7 +42,14 @@ void User::changePasswd() {
         printf("Fail to change.\n");
         return;
     }
+    printf("Input your new password.\n");
     char *buf = tool.getPasswd();
+    memset(passwd, 0, sizeof(passwd));
     for (int i = 0; i < strlen(buf); i++) passwd[i] = buf[i];
     printf("Success!\n");
+}
+
+void User::quit() {
+    Interface tool;
+    if(tool.confirmSave()) saveData();
 }

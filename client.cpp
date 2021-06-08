@@ -89,7 +89,7 @@ User *Client::Login() {
             }
         }
         if (cnt >= 0) {
-            u->getUserType();
+            // u->getUserType();
             u->methodList();
             return u;
         }
@@ -202,18 +202,25 @@ bool Client::emailLegal() {
 }
 
 void Client::methodList() {
-    printf("L: login\n");
-    printf("H: help\n");
+    printf("L: Login\n");
+    printf("H: Help\n");
+    printf("Q: Quit\n");
     char ch;
     while (true) {
         std::cin >> ch;
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         if (ch == 'L' || ch == 'l') {
-            Login(); return;
+            User *u = Login(); 
+            if (u == (User *)-1) continue;
+            delete u;
+            methodList();
         }
         else if (ch == 'H' || ch == 'h') {
             methodList(); return;
+        }
+        else if (ch == 'Q' || ch == 'q') {
+            return;
         }
         else printf("Command not exist.\n");
     }

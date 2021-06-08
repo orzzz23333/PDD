@@ -12,6 +12,7 @@ public:
     ~Merchant();
     int getUserType();
     void methodList();
+    void saveData();
 };
 
 #endif

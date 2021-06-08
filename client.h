@@ -21,6 +21,7 @@ public:
     User *uidQuery();
     User *emailQuery();
     User *Login();
+    void Logout();
     void methodList();
 };
 
