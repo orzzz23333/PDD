@@ -12,6 +12,7 @@ public:
     bool confirmAddItem();
     int chooseRole();
     int chooseType();
+    void listItems();
 };
 
 #endif

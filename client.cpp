@@ -27,22 +27,26 @@ User *Client::registerAccount() {
     std::ifstream in;
     if (role){
         block = sizeof(Merchant);
-        in.open("data/user/merchant.dat", std::ios::binary);
+        in.open(USER_FILE[1], std::ios::binary);
     }
     else {
         block = sizeof(Customer);
-        in.open("data/user/customer.dat", std::ios::binary);
+        in.open(USER_FILE[0], std::ios::binary);
     }
     in.seekg(0, std::ios::end);
     size_t size = in.tellg() / block;
     in.close();
     strcpy(uid, std::to_string(size + 100000).c_str());
     std::string nickname, passwd;
-    printf("Input your nickname\n");
+    printf("+--------------------+\n");
+    printf("|Input your nickname.|\n");
+    printf("+--------------------+\n");
     std::cin >> nickname;
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    printf("Input your passwd\n");
+    printf("+--------------------+\n");
+    printf("|Input your password.|\n");
+    printf("+--------------------+\n");
     std::cin >> passwd;
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -51,12 +55,12 @@ User *Client::registerAccount() {
     if (role){
         std::string _uid(uid), _email(email);
         p = new Merchant(_uid, _email, nickname, passwd);
-        out.open("data/user/merchant.dat", std::ios::binary|std::ios::app);
+        out.open(USER_FILE[1], std::ios::binary|std::ios::app);
     }
     else {
         std::string _uid(uid), _email(email);
         p = new Customer(_uid, _email, nickname, passwd);
-        out.open("data/user/customer.dat", std::ios::binary|std::ios::app);
+        out.open(USER_FILE[0], std::ios::binary|std::ios::app);
     }
     out.write((char *)p, block);
     out.close();
@@ -67,12 +71,16 @@ User *Client::Login() {
     Interface tool;
     role = tool.chooseRole();
     while (true) {
-        printf("Input your [e-mail address] or [UID] to login, or input your [e-mail address] to register\n");
+        printf("+-----------------------------------------------------------------------------------------+\n");
+        printf("|Input your [e-mail address] or [UID] to login, or input your [e-mail address] to register|\n");
+        printf("+-----------------------------------------------------------------------------------------+\n");
         std::string tempStr;
         std::cin >> tempStr;
+        std::cin.clear(); std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         if(tempStr == "q") return (User *)-1;
         setClient(tempStr);
-        User *u;
+
+        User *u = NULL;
         if (uidLegal()) u = uidQuery();
         else if (emailLegal()) u = emailQuery();
         else continue;
@@ -80,7 +88,9 @@ User *Client::Login() {
         int cnt = 3;
         while (cnt--) {
             std::string str;
-            printf("Input your password:\n");
+            printf("+--------------------|\n");
+            printf("|Input your password.|\n");
+            printf("+--------------------|\n");
             char *buf = tool.getPasswd();
             str = buf;
             if (!u->checkPasswd(str) && cnt) printf("Wrong password. %d more chance.\n", cnt);
@@ -105,11 +115,11 @@ User *Client::uidQuery() {
     std::ifstream in;
     if (role){
         block = sizeof(Merchant);
-        in.open("data/user/merchant.dat", std::ios::binary);
+        in.open(USER_FILE[1], std::ios::binary);
     }
     else {
         block = sizeof(Customer);
-        in.open("data/user/customer.dat", std::ios::binary);
+        in.open(USER_FILE[0], std::ios::binary);
     }
     in.seekg(0, std::ios::end);
     size_t size = in.tellg() / block;
@@ -131,11 +141,11 @@ User *Client::emailQuery() {
     std::ifstream in;
     if (role){
         block = sizeof(Merchant);
-        in.open("data/user/merchant.dat", std::ios::binary);
+        in.open(USER_FILE[1], std::ios::binary);
     }
     else {
         block = sizeof(Customer);
-        in.open("data/user/customer.dat", std::ios::binary);
+        in.open(USER_FILE[0], std::ios::binary);
     }
     in.seekg(0, std::ios::end);
     size_t size = in.tellg() / block;
@@ -149,7 +159,6 @@ User *Client::emailQuery() {
             in.close();
             return ret;
         }
-        in.seekg(block, std::ios::cur);
     }
     in.close();
     Interface tool;
@@ -202,15 +211,21 @@ bool Client::emailLegal() {
 }
 
 void Client::methodList() {
-    printf("L: Login\n");
-    printf("H: Help\n");
-    printf("Q: Quit\n");
+    printf("+-------------------------+\n");
+    printf("|A: Search in all items   |\n");
+    printf("|L: Login                 |\n");
+    printf("|H: Help                  |\n");
+    printf("|Q: Quit                  |\n");
+    printf("+-------------------------+\n");
     char ch;
     while (true) {
         std::cin >> ch;
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        if (ch == 'L' || ch == 'l') {
+        if (ch == 'A' || ch == 'a') {
+            Interface tool; tool.listItems();
+        }
+        else if (ch == 'L' || ch == 'l') {
             User *u = Login(); 
             if (u == (User *)-1) continue;
             delete u;

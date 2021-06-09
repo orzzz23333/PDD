@@ -31,7 +31,9 @@ void User::changePasswd() {
     int cnt = 3;
     while (cnt--) {
         std::string str;
-        printf("Input your password:\n");
+        printf("+--------------------+\n");
+        printf("|Input your password.|\n");
+        printf("+--------------------+\n");
         char *buf = tool.getPasswd();
         str = buf;
         if (!checkPasswd(str) && cnt) printf("Wrong password. %d more chance.\n", cnt);
@@ -58,7 +60,9 @@ double User::getBalance() {
 }
 
 double User::recharge() {
-    printf("Input a number you want to recharge.\n");
+    printf("+------------------------------------+\n");
+    printf("|Input a number you want to recharge.|\n");
+    printf("+------------------------------------+\n");
     double x;
     while(true) {
         if (!(std::cin >> x)) {
@@ -100,27 +104,34 @@ int Customer::getUserType() {
 
 void Customer::saveData() {
     int index = atoi(uid) - 100000;
-    std::fstream out("data/user/customer.dat", std::ios::binary|std::ios::out|std::ios::in);
+    std::fstream out(USER_FILE[0], std::ios::binary|std::ios::out|std::ios::in);
     out.seekp(index * sizeof(Customer), std::ios::beg);
     out.write((char *)this, sizeof(Customer));
     out.close();
 }
 
 void Customer::methodList() {
-    printf("B: Check balance\n");
-    printf("C: Change password\n");
-    printf("H: Help\n");
-    printf("R: Recharge\n");
-    printf("Q: Logout\n");
+    getUserType();
+    printf("+----------------------+\n");
+    printf("|A: Search in all items|\n");
+    printf("|B: Check balance      |\n");
+    printf("|H: Help               |\n");
+    printf("|P: Change password    |\n");
+    printf("|Q: Logout             |\n");
+    printf("|R: Recharge           |\n");
+    printf("+----------------------+\n");
     char ch;
     while (true) {
         std::cin >> ch;
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        if (ch == 'B' || ch == 'b') {
+        if (ch == 'A' || ch == 'a') {
+            Interface tool; tool.listItems();
+        }
+        else if (ch == 'B' || ch == 'b') {
             getBalance();
         }
-        else if (ch == 'C' || ch == 'c') {
+        else if (ch == 'P' || ch == 'p') {
             changePasswd(); saveData();
         }
         else if (ch == 'H' || ch == 'h') {
@@ -156,7 +167,7 @@ int Merchant::getUserType() {
 
 void Merchant::saveData() {
     int index = atoi(uid) - 100000;
-    std::fstream out("data/user/merchant.dat", std::ios::binary|std::ios::out|std::ios::in);
+    std::fstream out(USER_FILE[1], std::ios::binary|std::ios::out|std::ios::in);
     out.seekp(index * sizeof(Merchant), std::ios::beg);
     out.write((char *)this, sizeof(Merchant));
     out.close();
@@ -164,85 +175,146 @@ void Merchant::saveData() {
 
 Commodity *Merchant::addItem(std::string name, int type) {
     int price;
-    printf("Input the price.\n");
-    std::cin >> price;
-    std::cin.clear(); std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    printf("+----------------+\n");
+    printf("|Input the price.|\n");
+    printf("+----------------+\n");
+    while(true) {
+        if (!(std::cin >> price)) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            printf("Bad Input!\n");
+        }
+        else break;
+    }
+
     std::ifstream in;
     int block;
-    if (type == 0){
-        block = sizeof(Book);
-        in.open("data/commmodity/book.dat", std::ios::binary);
-    }
-    else if (type == 1) {
-        block = sizeof(Clothing);
-        in.open("data/commmodity/clothing.dat", std::ios::binary);
-    }
-    else {
-        block = sizeof(Electronic);
-        in.open("data/commmodity/electronic.dat", std::ios::binary);
-    }
+    if (type == 0) block = sizeof(Book);
+    else if (type == 1) block = sizeof(Clothing);
+    else block = sizeof(Electronic);
+    in.open(COMMODITY_FILE[type], std::ios::binary);
     in.seekg(0, std::ios::end);
     size_t size = in.tellg() / block;
     in.close();
-    Commodity *p;
-    std::ofstream out;
-    if (type == 0){
-        p = new Book(size + 1000, name, price);
-        out.open("data/commmodity/book.dat", std::ios::binary|std::ios::app);
+
+    Commodity *p = NULL;
+    if (type == 0) p = new Book(atoi(uid), size + 1000, name, price);
+    else if (type == 1) p = new Clothing(atoi(uid), size + 2000, name, price);
+    else p = new Electronic(atoi(uid), size + 3000, name, price);
+    p->saveData();
+
+    for(int i = 0; i < ITEM_MAX; i++)
+    if(list[i] == 0) {
+        list[i] = size + 1000 * (type + 1);
+        break;
     }
-    else if (type == 1) {
-        p = new Clothing(size + 1000, name, price);
-        out.open("data/commmodity/clothing.dat", std::ios::binary|std::ios::app);
-    }
-    else {
-        p = new Electronic(size + 1000, name, price);
-        out.open("data/commmodity/electronic.dat", std::ios::binary|std::ios::app);
-    }
-    out.write((char *)p, block);
-    out.close();
+    
     return p;
 }
 
 Commodity *Merchant::search() {
     Interface tool;
     int type = tool.chooseType();
-    printf("Input the name of the commodity.\n");
+    printf("+--------------------------------+\n");
+    printf("|Input the name of the commodity.|\n");
+    printf("+--------------------------------+\n");
     std::string name;
-    std::cin >> name;
-    std::cin.clear(); std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::getline(std::cin, name);
+    // std::cin.clear(); std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
     size_t block;
     std::ifstream in;
-    if (type == 0){
-        block = sizeof(Book);
-        in.open("data/commodity/book.dat", std::ios::binary);
-    }
-    else if (type == 1) {
-        block = sizeof(Clothing);
-        in.open("data/commodity/clothing.dat", std::ios::binary);
-    }
-    else {
-        block = sizeof(Electronic);
-        in.open("data/commodity/electronic.dat", std::ios::binary);
-    }
+    if (type == 0) block = sizeof(Book);
+    else if (type == 1) block = sizeof(Clothing);
+    else block = sizeof(Electronic);
+    in.open(COMMODITY_FILE[type], std::ios::binary);
     in.seekg(0, std::ios::end);
     size_t size = in.tellg() / block;
     in.seekg(0, std::ios::beg);
-    Commodity *ret;
+
+    Commodity *ret = NULL;
     if (type == 0) ret = new Book();
     else if (type == 1) ret = new Clothing();
     else ret = new Electronic();
     for (int index = 0; index < size; index++) {
         in.read((char *)ret, block);
         std::string str(ret->name);
-        if (str == name) {
+        if (ret->belong == atoi(uid) && str == name) {
             in.close();
             return ret;
         }
-        in.seekg(block, std::ios::cur);
     }
     in.close();
+
     if (tool.confirmAddItem()) return addItem(name, type);
     else return (Commodity *) -1;
+}
+
+void Merchant::changeInfo() {
+    Commodity *p = search();
+    if (p == (Commodity *)-1) {
+        printf("Change Failed.\n");
+        return;
+    }
+    p->listInfo();
+    printf("+-----------------------------+\n");
+    printf("|Rename. Input 'skip' to skip.|\n");
+    printf("+-----------------------------+\n");
+    std::string name;
+    std::getline(std::cin, name);
+    // std::cin.clear(); std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    if (name != "skip") {
+        memset(p->name, 0, sizeof(p->name)); name.copy(p->name, name.size());
+    }
+    int price = 0, discount = 0, inventory = 0;
+    printf("+--------------------------+\n");
+    printf("|Input new price. (integer)|\n");
+    printf("+--------------------------+\n");
+        while(true) {
+        if (!(std::cin >> price)) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            printf("Bad Input!\n");
+        }
+        else break;
+    }
+    p->price = price;
+    printf("+-------------------------------------+\n");
+    printf("|Input new discount. (?%% off, integer)|\n");
+    printf("+-------------------------------------+\n");
+    while(true) {
+        if (!(std::cin >> discount)) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            printf("Bad Input!\n");
+        }
+        else break;
+    }
+    p->changeDiscount(discount);
+    printf("+--------------------+\n");
+    printf("|Input new inventory.|\n");
+    printf("+--------------------+\n");
+    while(true) {
+        if (!(std::cin >> inventory)) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            printf("Bad Input!\n");
+        }
+        else break;
+    }
+    p->inventory = inventory;
+    printf("+----------------------------------+\n");
+    printf("|Change Info. Input 'skip' to skip.|\n");
+    printf("+----------------------------------+\n");
+    std::cin.get(); std::getline(std::cin, name);
+    // std::cin.clear(); std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    if (name != "skip") {
+        memset(p->info, 0, sizeof(p->info)); name.copy(p->info, name.size());
+    }
+    p->saveData();
+    printf("Success! Data now:\n");
+    p->listInfo();
+    delete p;
 }
 
 void Merchant::stock() {
@@ -252,32 +324,51 @@ void Merchant::stock() {
         return;
     }
     p->listInfo();
-    printf("Input the number you stock.\n");
+    printf("+---------------------------+\n");
+    printf("|Input the number you stock.|\n");
+    printf("+---------------------------+\n");
     int x = 0;
-    std::cin >> x;
-    std::cin.clear(); std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    while(true) {
+        if (!(std::cin >> x)) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            printf("Bad Input!\n");
+        }
+        else break;
+    }
     p->stock(x);
     printf("Success!\n");
     delete p;
 }
 
 void Merchant::methodList() {
-    printf("B: Check balance\n");
-    printf("C: Change password\n");
-    printf("H: Help\n");
-    printf("R: Recharge\n");
-    printf("S: Stock\n");
-    printf("Q: Logout\n");
+    getUserType();
+    printf("+-------------------------+\n");
+    printf("|A: Search in all items   |\n");
+    printf("|B: Check balance         |\n");
+    printf("|C: Change info of an item|\n");
+    printf("|H: Help                  |\n");
+    printf("|P: Change password       |\n");
+    printf("|Q: Logout                |\n");
+    printf("|R: Recharge              |\n");
+    printf("|S: Stock                 |\n");
+    printf("+-------------------------+\n");
     char ch;
     while (true) {
         std::cin >> ch;
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        if (ch == 'B' || ch == 'b') {
+        if (ch == 'A' || ch == 'a') {
+            Interface tool; tool.listItems();
+        }
+        else if (ch == 'B' || ch == 'b') {
             getBalance();
         }
-        else if (ch == 'C' || ch == 'c') {
+        else if (ch == 'P' || ch == 'p') {
             changePasswd();
+        }
+        else if (ch == 'C' || ch == 'c') {
+            changeInfo();
         }
         else if (ch == 'H' || ch == 'h') {
             methodList(); return;

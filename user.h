@@ -10,6 +10,16 @@ const double MONEY_MAX = 1e10;
 const int ITEM_MAX = 100;
 const int LEN_MAX = 50;
 
+const char COMMODITY_FILE[3][40] = {
+    "data/commodity/book.dat",
+    "data/commodity/clothing.dat",
+    "data/commodity/electronic.dat"
+};
+const char USER_FILE[2][30] = {
+    "data/user/customer.dat",
+    "data/user/merchant.dat"
+};
+
 class User {
 private:
     char nickname[LEN_MAX];
@@ -52,6 +62,7 @@ public:
     int getUserType();
     void methodList();
     void stock();
+    void changeInfo();
     Commodity *addItem(std::string name, int type);
     Commodity *search();
     void saveData();
