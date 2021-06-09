@@ -9,7 +9,9 @@ public:
     char *getPasswd();
     bool confirmRegister();
     bool confirmSave();
+    bool confirmAddItem();
     int chooseRole();
+    int chooseType();
 };
 
 #endif

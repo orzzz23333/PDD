@@ -4,11 +4,12 @@
 #include <bits/stdc++.h>
 #include <conio.h>
 #include "user.h"
+#include "commodity.h"
 
 class Client {
 private:
-    char uid[N];
-    char email[N];
+    char uid[LEN_MAX];
+    char email[LEN_MAX];
     bool role; // 0: Customer, 1: Merchant
     bool validChar(char ch);
     User *registerAccount();
@@ -22,6 +23,8 @@ public:
     User *emailQuery();
     User *Login();
     void Logout();
+    Commodity *getCommodityById();
+    Commodity *getCommodityByName();
     void methodList();
 };
 

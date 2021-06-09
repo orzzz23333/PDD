@@ -1,7 +1,5 @@
 #include "client.h"
 #include "interface.h"
-#include "customer.h"
-#include "merchant.h"
 
 Client::Client() {}
 
@@ -29,11 +27,11 @@ User *Client::registerAccount() {
     std::ifstream in;
     if (role){
         block = sizeof(Merchant);
-        in.open("data/merchant.dat", std::ios::binary);
+        in.open("data/user/merchant.dat", std::ios::binary);
     }
     else {
         block = sizeof(Customer);
-        in.open("data/customer.dat", std::ios::binary);
+        in.open("data/user/customer.dat", std::ios::binary);
     }
     in.seekg(0, std::ios::end);
     size_t size = in.tellg() / block;
@@ -42,21 +40,23 @@ User *Client::registerAccount() {
     std::string nickname, passwd;
     printf("Input your nickname\n");
     std::cin >> nickname;
+    std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     printf("Input your passwd\n");
     std::cin >> passwd;
+    std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     User *p;
     std::ofstream out;
     if (role){
         std::string _uid(uid), _email(email);
         p = new Merchant(_uid, _email, nickname, passwd);
-        out.open("data/merchant.dat", std::ios::binary|std::ios::app);
+        out.open("data/user/merchant.dat", std::ios::binary|std::ios::app);
     }
     else {
         std::string _uid(uid), _email(email);
         p = new Customer(_uid, _email, nickname, passwd);
-        out.open("data/customer.dat", std::ios::binary|std::ios::app);
+        out.open("data/user/customer.dat", std::ios::binary|std::ios::app);
     }
     out.write((char *)p, block);
     out.close();
@@ -85,7 +85,7 @@ User *Client::Login() {
             str = buf;
             if (!u->checkPasswd(str) && cnt) printf("Wrong password. %d more chance.\n", cnt);
             else {
-                delete buf;break;
+                delete[] buf; break;
             }
         }
         if (cnt >= 0) {
@@ -105,11 +105,11 @@ User *Client::uidQuery() {
     std::ifstream in;
     if (role){
         block = sizeof(Merchant);
-        in.open("data/merchant.dat", std::ios::binary);
+        in.open("data/user/merchant.dat", std::ios::binary);
     }
     else {
         block = sizeof(Customer);
-        in.open("data/customer.dat", std::ios::binary);
+        in.open("data/user/customer.dat", std::ios::binary);
     }
     in.seekg(0, std::ios::end);
     size_t size = in.tellg() / block;
@@ -131,11 +131,11 @@ User *Client::emailQuery() {
     std::ifstream in;
     if (role){
         block = sizeof(Merchant);
-        in.open("data/merchant.dat", std::ios::binary);
+        in.open("data/user/merchant.dat", std::ios::binary);
     }
     else {
         block = sizeof(Customer);
-        in.open("data/customer.dat", std::ios::binary);
+        in.open("data/user/customer.dat", std::ios::binary);
     }
     in.seekg(0, std::ios::end);
     size_t size = in.tellg() / block;
@@ -214,7 +214,7 @@ void Client::methodList() {
             User *u = Login(); 
             if (u == (User *)-1) continue;
             delete u;
-            methodList();
+            methodList(); return;
         }
         else if (ch == 'H' || ch == 'h') {
             methodList(); return;

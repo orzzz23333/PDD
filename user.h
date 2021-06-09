@@ -2,17 +2,24 @@
 #define USER_H
 
 #include <bits/stdc++.h>
-const int N = 50;
+#include <limits>
+
+#include "commodity.h"
+
+const double MONEY_MAX = 1e10;
+const int ITEM_MAX = 100;
+const int LEN_MAX = 50;
 
 class User {
 private:
-    char nickname[N];
-    char passwd[N];
+    char nickname[LEN_MAX];
+    char passwd[LEN_MAX];
+    double balance;
 public:
-    char uid[N];
-    char email[N];
+    char uid[LEN_MAX];
+    char email[LEN_MAX];
     User();
-    User(std::string uid, std::string email, std::string nickname, std::string passwd);
+    User(std::string uid, std::string email, std::string nickname, std::string passwd, int balance = 0);
     bool checkPasswd(std::string str);
     virtual ~User();
     virtual int getUserType() = 0;
@@ -20,8 +27,34 @@ public:
     virtual void saveData() = 0;
     void quit();
     void changePasswd();
+    double getBalance();
+    double recharge();
 };
 
+class Customer : public User {
+private:
+public:
+    Customer();
+    Customer(std::string UID, std::string EMAIL, std::string NICKNAME, std::string PASSWD);
+    ~Customer();
+    int getUserType();
+    void saveData();
+    void methodList();
+};
 
+class Merchant : public User {
+private:
+    int list[ITEM_MAX];
+public:
+    Merchant();
+    Merchant(std::string UID, std::string EMAIL, std::string NICKNAME, std::string PASSWD);
+    ~Merchant();
+    int getUserType();
+    void methodList();
+    void stock();
+    Commodity *addItem(std::string name, int type);
+    Commodity *search();
+    void saveData();
+};
 
 #endif
