@@ -1,0 +1,17 @@
+release/buy.o
+release/commodity.o
+release/login.o
+release/main.o
+release/mainwindow.o
+release/managecommodity.o
+release/manageuser.o
+release/register.o
+release/user.o
+release/warning.o
+release/moc_buy.o
+release/moc_login.o
+release/moc_mainwindow.o
+release/moc_managecommodity.o
+release/moc_manageuser.o
+release/moc_register.o
+release/moc_warning.o

@@ -1,0 +1,17 @@
+debug/buy.o
+debug/commodity.o
+debug/login.o
+debug/main.o
+debug/mainwindow.o
+debug/managecommodity.o
+debug/manageuser.o
+debug/register.o
+debug/user.o
+debug/warning.o
+debug/moc_buy.o
+debug/moc_login.o
+debug/moc_mainwindow.o
+debug/moc_managecommodity.o
+debug/moc_manageuser.o
+debug/moc_register.o
+debug/moc_warning.o

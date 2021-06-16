@@ -101,7 +101,7 @@ void Interface::listItems() {
             else block = sizeof(Electronic), kind = "Electronic";
             in.open(COMMODITY_FILE[type], std::ios::binary);
             in.seekg(0, std::ios::end);
-            size_t size = in.tellg() / block;
+            int size = in.tellg() / block;
             in.seekg(0, std::ios::beg);
             Commodity *ret = NULL;
             if (type == 0) ret = new Book();
@@ -129,7 +129,7 @@ void Interface::listItems() {
             else block = sizeof(Electronic), kind = "Electronic";
             in.open(COMMODITY_FILE[type], std::ios::binary);
             in.seekg(0, std::ios::end);
-            size_t size = in.tellg() / block;
+            int size = in.tellg() / block;
             in.seekg(0, std::ios::beg);
             Commodity *ret = NULL;
             if (type == 0) ret = new Book();
@@ -170,7 +170,7 @@ void Interface::listItems() {
         else block = sizeof(Electronic);
         in.open(COMMODITY_FILE[type], std::ios::binary);
         in.seekg(0, std::ios::end);
-        size_t size = in.tellg() / block;
+        int size = in.tellg() / block;
         in.seekg(0, std::ios::beg);
         Commodity *ret = NULL;
         if (type == 0) ret = new Book();
